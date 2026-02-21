@@ -22,11 +22,9 @@ module tt_um_example (
   // assign uio_oe  = 0;
 
   // uio[0] = 0, uio[1] = 0, uio[2] = 1
-  always_comb begin
-    uio_oe = 8'b0010_0000;
-    uio_out[7:3] = 0;
-    uio_out[1:0] = 0;
-  end
+  assign uio_oe = 8'b0010_0000;
+  assign uio_out[7:3] = 0;
+  assign uio_out[1:0] = 0;
 
   // List all unused inputs to prevent warnings
   wire _unused = &{uio_in[7:2], ena, '0};
