@@ -23,7 +23,7 @@ module tt_um_example (
 
   // uio[0] = 0, uio[1] = 0, uio[2] = 1
   always_comb begin
-    uio_oe = 7'b0010_0000;
+    uio_oe = 8'b0010_0000;
     uio_out[7:3] = 0;
     uio_out[1:0] = 0;
   end
