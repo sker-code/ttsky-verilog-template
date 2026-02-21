@@ -24,12 +24,12 @@ module tt_um_example (
   // uio[0] = 0, uio[1] = 0, uio[2] = 1
   always_comb begin
     uio_oe = 7'b0010_0000;
-    uio_out[3:7] = 0;
-    uio_out[0:1] = 0;
+    uio_out[7:3] = 0;
+    uio_out[1:0] = 0;
   end
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{uio_in[2:7], ena, '0};
+  wire _unused = &{uio_in[7:2], ena, '0};
 
   //RangeFinder
   RangeFinder #(8) rf(.data_in(ui_in), .clock(clk), .reset(~rst_n), .go(uio_in[0]), .finish(uio_in[1]),
