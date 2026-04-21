@@ -1,14 +1,14 @@
 # Tiny Tapeout project information
 project:
-  title:        "RangeFinder"      # Project title
+  title:        "Bomberman"      # Project title
   author:       "Sylvia Ker"      # Your name
   discord:      "N/A"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "ex4"      # One line description of what your project does
+  description:  "18244 final project"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     25000000  # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.
-  tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
+  tiles: "1x2"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
   top_module:  "tt_um_example"
@@ -18,34 +18,40 @@ project:
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:
     - "project.v"
+    - "ChipInterface.sv"
+    - "Bomberman.sv"
+    - "VGA.sv"
+    - "Display.sv"
+    - "MapDisplay.sv"
+    - "MapDisplayDecoder.sv"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: "data_in"
-  ui[1]: "data_in"
-  ui[2]: "data_in"
-  ui[3]: "data_in"
-  ui[4]: "data_in"
-  ui[5]: "data_in"
-  ui[6]: "data_in"
-  ui[7]: "data_in"
+  ui[0]: "btn_up"
+  ui[1]: "btn_down"
+  ui[2]: "btn_left"
+  ui[3]: "btn_right"
+  ui[4]: "btn_up1"
+  ui[5]: "btn_down1"
+  ui[6]: "btn_left1"
+  ui[7]: "btn_right1"
 
   # Outputs
-  uo[0]: "range"
-  uo[1]: "range"
-  uo[2]: "range"
-  uo[3]: "range"
-  uo[4]: "range"
-  uo[5]: "range"
-  uo[6]: "range"
-  uo[7]: "range"
+  uo[0]: "red[0]"
+  uo[1]: "red[1]"
+  uo[2]: "green[0]"
+  uo[3]: "green[1]"
+  uo[4]: "blue[0]"
+  uo[5]: "blue[1]"
+  uo[6]: "VS"
+  uo[7]: "HS"
 
   # Bidirectional pins
-  uio[0]: "go"
-  uio[1]: "finish"
-  uio[2]: "error"
+  uio[0]: "btn_bomb"
+  uio[1]: "btn_bomb1"
+  uio[2]: ""
   uio[3]: ""
   uio[4]: ""
   uio[5]: ""
