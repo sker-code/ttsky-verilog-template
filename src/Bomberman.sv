@@ -370,14 +370,10 @@ module Synchronizer
   (input  logic async, clk,
    output logic sync);
 
-  logic buffer1, buffer2, buffer3, buffer4, buffer5;
+  logic buffer;
 
   always_ff @(posedge clk) begin
-    sync <= buffer5;
-    buffer5 <= buffer4;
-    buffer4 <= buffer3;
-    buffer3 <= buffer2;
-    buffer2 <= buffer1;
-    buffer1 <= async;
+    sync <= buffer;
+    buffer <= async;
   end
 endmodule: Synchronizer

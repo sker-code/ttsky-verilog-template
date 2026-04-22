@@ -33,7 +33,7 @@ module VGA
       HS_blank = 1'b1;
     end
   end
-  always_ff @(posedge clk, negedge rst_n) begin //HS
+  always_ff @(posedge clk) begin //HS
     if (~rst_n) begin
       HS_counter <= 10'd0;
     end
@@ -70,7 +70,7 @@ module VGA
     end
   end
 
-  always_ff @(posedge clk, negedge rst_n) begin //VS
+  always_ff @(posedge clk) begin //VS
     if (~rst_n) begin
       VS_counter <= 10'b0;
     end
