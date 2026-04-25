@@ -128,7 +128,11 @@ module Bomb
                    .counter(counter));
   
   always_ff @(posedge clk) begin 
-    if (curr_state == WAIT) begin
+    if (~rst_n) begin
+      bomb_x <= 0;
+      bomb_y <= 0;
+    end
+    else if (curr_state == WAIT) begin
       bomb_x <= pl_x;
       bomb_y <= pl_y;
     end
@@ -269,8 +273,8 @@ module TempMap
    output logic [10:0][14:0][2:0] temp_map);
   
   always_comb begin
-    for (logic [3:0] i = 0; i < 11; i++) begin
-      for (logic [3:0] j = 0; j < 15; j++) begin
+    for (int i = 0; i < 11; i++) begin
+      for (int j = 0; j < 15; j++) begin
         // if not unbreakable and not fire
         if ((map[i][j] != 3'd2) && (map[i][j] != 3'd4) && 
              bomb_firing && (((i == bomb1_y) && (j == bomb1_x)) ||
@@ -319,8 +323,8 @@ module Map
 
   always_ff @(posedge clk) begin
     if (~rst_n) begin
-      for (logic [3:0] i = 0; i < 11; i++) begin
-        for (logic [3:0] j = 0; j < 15; j++) begin
+      for (int i = 0; i < 11; i++) begin
+        for (int j = 0; j < 15; j++) begin
           if ((i == 0) || (i == 10) || (j == 0) || (j == 14)) begin 
             map[i][j] <= 3'd2; // unbreakable borders
           end
@@ -344,15 +348,15 @@ module Map
     end
     else if (refresh)
       if (pl1_win) begin
-        for (logic [3:0] i = 0; i < 11; i++) begin
-          for (logic [3:0] j = 0; j < 15; j++) begin 
+        for (int i = 0; i < 11; i++) begin
+          for (int j = 0; j < 15; j++) begin 
             map[i][j] <= 3'd5;
           end
         end
       end
       else if (pl2_win) begin
-        for (logic [3:0] i = 0; i < 11; i++) begin
-          for (logic [3:0] j = 0; j < 15; j++) begin 
+        for (int i = 0; i < 11; i++) begin
+          for (int j = 0; j < 15; j++) begin 
             map[i][j] <= 3'd6;
           end
         end
