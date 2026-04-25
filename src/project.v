@@ -22,13 +22,14 @@ module tt_um_example (
   // assign uio_oe  = 0;
 
   // uio_oe[0] = 1, uio_oe[1] = 1
-//   assign uio_oe = 8'b0000_0011;
-  assign uio_oe = 8'b1000_0000;
+  // assign uio_oe = 8'b0000_0011;
+  // IOs: Enable path (active high: 0=input, 1=output)
+  assign uio_oe = 8'b0000_0000;
 
   // List all unused inputs to prevent warnings
 //   wire _unused = &{uio_in[7:2], ena, '0};
   wire _unused = &{uio_in[7:1], ena, '0};
-  assign uio_out = '0;
+  assign uio_out = 0;
 
   ChipInterface chip(.clk(clk), .rst_n(rst_n),
                      .btn_up(ui_in[0]), .btn_down(ui_in[1]), .btn_left(ui_in[2]), .btn_right(ui_in[3]),
