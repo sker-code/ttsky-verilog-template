@@ -214,7 +214,7 @@ module Player
         pl_y <= 9;
       end
     end
-    if (up && pl_y > 1 && up_valid) begin
+    else if (up && pl_y > 1 && up_valid) begin
       pl_y <= pl_y - 1;
     end
     else if (down && pl_y < 9 && down_valid) begin
