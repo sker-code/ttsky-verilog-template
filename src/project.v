@@ -22,17 +22,19 @@ module tt_um_example (
   // assign uio_oe  = 0;
 
   // uio_oe[0] = 1, uio_oe[1] = 1
-  assign uio_oe = 8'b0000_0011;
+//   assign uio_oe = 8'b0000_0011;
+  assign uio_oe = 8'b0000_0001;
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{uio_in[7:2], ena, '0};
+//   wire _unused = &{uio_in[7:2], ena, '0};
+  wire _unused = &{uio_in[7:1], ena, '0};
   assign uio_out = '0;
 
   ChipInterface chip(.clk(clk), .rst_n(rst_n),
                      .btn_up(ui_in[0]), .btn_down(ui_in[1]), .btn_left(ui_in[2]), .btn_right(ui_in[3]),
                      .btn_bomb(uio_in[0]),
                      .btn_up1(ui_in[4]), .btn_down1(ui_in[5]), .btn_left1(ui_in[6]), .btn_right1(ui_in[7]),
-                     .btn_bomb1(uio_in[1]),
+                    //  .btn_bomb1(uio_in[1]),
                      .red(uo_out[1:0]), .green(uo_out[3:2]), .blue(uo_out[5:4]), 
                      .HS(uo_out[7]), .VS(uo_out[6]));
 

@@ -5,7 +5,7 @@ module ChipInterface
    input  logic btn_up, btn_down, btn_left, btn_right,
    input  logic btn_bomb,
    input  logic btn_up1, btn_down1, btn_left1, btn_right1,
-   input  logic btn_bomb1,
+//    input  logic btn_bomb1,
    output logic [1:0] red, green, blue, 
    output logic HS, VS);
 

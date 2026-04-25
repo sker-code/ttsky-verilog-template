@@ -30,14 +30,14 @@ module Bomberman
   Player player1_m(.clk(clk), .rst_n(rst_n), .refresh(refresh),
                    .btn_up(btn_up), .btn_down(btn_down), .btn_left(btn_left), .btn_right(btn_right),
                    .map(map),
-                   .is_player1(1),
+                   .is_player1('1),
                    .pl_x(pl1_x), .pl_y(pl1_y),
                    .is_alive(pl1_alive));
   
   Player player2_m(.clk(clk), .rst_n(rst_n), .refresh(refresh),
                    .btn_up(btn_up1), .btn_down(btn_down1), .btn_left(btn_left1), .btn_right(btn_right1),
                    .map(map),
-                   .is_player1(0),
+                   .is_player1('0),
                    .pl_x(pl2_x), .pl_y(pl2_y),
                    .is_alive(pl2_alive));
 
