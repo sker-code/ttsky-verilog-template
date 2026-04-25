@@ -23,7 +23,7 @@ module tt_um_example (
 
   // uio_oe[0] = 1, uio_oe[1] = 1
 //   assign uio_oe = 8'b0000_0011;
-  assign uio_oe = 8'b0000_0001;
+  assign uio_oe = 8'b1000_0000;
 
   // List all unused inputs to prevent warnings
 //   wire _unused = &{uio_in[7:2], ena, '0};
