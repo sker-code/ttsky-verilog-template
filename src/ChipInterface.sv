@@ -29,7 +29,7 @@ module ChipInterface
                  .btn_up(btn_up), .btn_down(btn_down), .btn_left(btn_left), .btn_right(btn_right),
                  .btn_bomb(btn_bomb),
                  .btn_up1(btn_up1), .btn_down1(btn_down1), .btn_left1(btn_left1), .btn_right1(btn_right1),
-                 .btn_bomb1(btn_bomb1),
+                 //.btn_bomb1(btn_bomb1),
                  .map(map));
 
 endmodule: ChipInterface

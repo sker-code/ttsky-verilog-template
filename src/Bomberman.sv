@@ -4,7 +4,7 @@ module Bomberman
    input  logic btn_up, btn_down, btn_left, btn_right,
    input  logic btn_bomb, 
    input  logic btn_up1, btn_down1, btn_left1, btn_right1,
-   input  logic btn_bomb1, 
+   //input  logic btn_bomb1, 
    output logic [10:0][14:0][2:0] map);
   
   logic [10:0][14:0][2:0] temp_map;
@@ -20,8 +20,7 @@ module Bomberman
             .map(map),
             .pl1_win(pl1_win), .pl2_win(pl2_win));
 
-  TempMap tempmap_m(.rst_n(rst_n), .refresh(refresh),
-                    .map(map),
+  TempMap tempmap_m(.map(map),
                     .pl1_x(pl1_x), .pl1_y(pl1_y),
                     .pl2_x(pl2_x), .pl2_y(pl2_y),
                     .bomb1_x(bomb1_x), .bomb1_y(bomb1_y),
@@ -262,8 +261,7 @@ module ButtonBuffer
 endmodule: ButtonBuffer
 
 module TempMap
-  (input  logic rst_n, refresh,
-   input  logic [10:0][14:0][2:0] map,
+  (input  logic [10:0][14:0][2:0] map,
    input  logic [3:0] pl1_x, pl1_y,
    input  logic [3:0] pl2_x, pl2_y,
    input  logic [3:0] bomb1_x, bomb1_y,
@@ -271,15 +269,15 @@ module TempMap
    output logic [10:0][14:0][2:0] temp_map);
   
   always_comb begin
-    for (int i = 0; i < 11; i++) begin
-      for (int j = 0; j < 15; j++) begin
+    for (logic [3:0] i = 0; i < 11; i++) begin
+      for (logic [3:0] j = 0; j < 15; j++) begin
         // if not unbreakable and not fire
         if ((map[i][j] != 3'd2) && (map[i][j] != 3'd4) && 
              bomb_firing && (((i == bomb1_y) && (j == bomb1_x)) ||
-                             ((i == bomb1_y - 1) && (j == bomb1_x)) ||
-                             ((i == bomb1_y + 1) && (j == bomb1_x)) ||
-                             ((i == bomb1_y) && (j == bomb1_x - 1)) ||
-                             ((i == bomb1_y) && (j == bomb1_x + 1)))) begin
+                             ((i == (bomb1_y - 1)) && (j == bomb1_x)) ||
+                             ((i == (bomb1_y + 1)) && (j == bomb1_x)) ||
+                             ((i == bomb1_y) && (j == (bomb1_x - 1))) ||
+                             ((i == bomb1_y) && (j == (bomb1_x + 1))))) begin
             temp_map[i][j] = 3'd4; // fire
         end
         // if bomb finished firing, replace it with grass
@@ -321,8 +319,8 @@ module Map
 
   always_ff @(posedge clk) begin
     if (~rst_n) begin
-      for (int i = 0; i < 11; i++) begin
-        for (int j = 0; j < 15; j++) begin
+      for (logic [3:0] i = 0; i < 11; i++) begin
+        for (logic [3:0] j = 0; j < 15; j++) begin
           if ((i == 0) || (i == 10) || (j == 0) || (j == 14)) begin 
             map[i][j] <= 3'd2; // unbreakable borders
           end
@@ -346,15 +344,15 @@ module Map
     end
     else if (refresh)
       if (pl1_win) begin
-        for (int i = 0; i < 11; i++) begin
-          for (int j = 0; j < 15; j++) begin 
+        for (logic [3:0] i = 0; i < 11; i++) begin
+          for (logic [3:0] j = 0; j < 15; j++) begin 
             map[i][j] <= 3'd5;
           end
         end
       end
       else if (pl2_win) begin
-        for (int i = 0; i < 11; i++) begin
-          for (int j = 0; j < 15; j++) begin 
+        for (logic [3:0] i = 0; i < 11; i++) begin
+          for (logic [3:0] j = 0; j < 15; j++) begin 
             map[i][j] <= 3'd6;
           end
         end
