@@ -1,11 +1,11 @@
-
 `default_nettype none
+
 module ChipInterface
   (input  logic clk, rst_n,
-   input  logic btn_up, btn_down, btn_left, btn_right,
-   input  logic btn_bomb,
    input  logic btn_up1, btn_down1, btn_left1, btn_right1,
-//    input  logic btn_bomb1,
+   input  logic btn_bomb1,
+   input  logic btn_up2, btn_down2, btn_left2, btn_right2,
+   input  logic btn_bomb2,
    output logic [1:0] red, green, blue, 
    output logic HS, VS);
 
@@ -26,10 +26,12 @@ module ChipInterface
   assign refresh = (row == 10'd479 && col == 10'd639);
 
   Bomberman game(.clk(clk), .rst_n(rst_n), .refresh(refresh),
-                 .btn_up(btn_up), .btn_down(btn_down), .btn_left(btn_left), .btn_right(btn_right),
-                 .btn_bomb(btn_bomb),
                  .btn_up1(btn_up1), .btn_down1(btn_down1), .btn_left1(btn_left1), .btn_right1(btn_right1),
-                 //.btn_bomb1(btn_bomb1),
+                 .btn_bomb1(btn_bomb1),
+                 .btn_up2(btn_up2), .btn_down2(btn_down2), .btn_left2(btn_left2), .btn_right2(btn_right2),
+                 .btn_bomb2(btn_bomb2),
                  .map(map));
 
 endmodule: ChipInterface
+
+    
