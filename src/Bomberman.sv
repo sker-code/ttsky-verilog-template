@@ -109,7 +109,7 @@ module BombCounter
   
   always_ff @(posedge clk) begin
     if (~rst_n || clear) begin
-      counter <= 1'd0;
+      counter <= 8'd0;
     end
     else if (refresh) begin
       counter <= counter + 8'd1;
@@ -391,7 +391,7 @@ module Map
 
   always_ff @(posedge clk) begin
     if (~rst_n) begin
-      map = reset_map;
+      map <= reset_map;
     end
     else if (refresh) begin 
       map <= temp_map;
