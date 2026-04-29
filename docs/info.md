@@ -9,12 +9,16 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Check to see how many cells
+This is a mini implementation of the nostalgic game Bomberman. It supports
+two players 
 
 ## How to test
 
-Explain how to use your project
+Plug into the VGA monitor to see if the chip works. 
 
 ## External hardware
+
+- VGA Pmod (https://store.tinytapeout.com/products/TinyVGA-Pmod-p678647356)
+- Buttons, wires, resistors (10x)
 
 List external hardware used in your project (e.g. PMOD, LED display, etc), if any
