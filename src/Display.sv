@@ -2,7 +2,7 @@
 module Display
   (input  logic [9:0] row, col,
    input  logic blank,
-   input  logic [10:0][14:0][2:0] map,
+   input  logic [6:0][8:0][2:0] map,
    output logic [1:0] red, green, blue);
   
   logic [1:0] map_red, map_green, map_blue;
