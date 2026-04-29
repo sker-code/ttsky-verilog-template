@@ -105,14 +105,14 @@ endmodule: GameFSM
 
 module BombCounter
   (input  logic clk, rst_n, refresh, clear,
-   output logic [7:0] counter);
+   output logic [6:0] counter);
   
   always_ff @(posedge clk) begin
     if (~rst_n || clear) begin
-      counter <= 8'd0;
+      counter <= 7'd0;
     end
     else if (refresh) begin
-      counter <= counter + 8'd1;
+      counter <= counter + 7'd1;
     end
   end
 
@@ -126,7 +126,7 @@ module Bomb
    output logic bomb_ticking, bomb_firing);
   
   logic bomb;
-  logic [7:0] counter;
+  logic [6:0] counter;
   logic clear_counter; 
 
   ButtonBuffer up_m(.button_in(btn_bomb), .clk(clk), .rst_n(rst_n), .refresh(refresh),
@@ -157,13 +157,13 @@ module Bomb
         bomb_firing = 1'd0;
       end
       TICKING: begin
-        next_state = (counter == 120) ? FIRE : TICKING;
+        next_state = (counter == 60) ? FIRE : TICKING;
         bomb_ticking = 1'd1;
         clear_counter = 1'd0;
         bomb_firing = 1'd0;
       end
       FIRE: begin
-        next_state = (counter == 180) ? WAIT : FIRE;
+        next_state = (counter == 120) ? WAIT : FIRE;
         bomb_ticking = 1'd0;
         clear_counter = 1'd0;
         bomb_firing = 1'd1;
@@ -363,10 +363,10 @@ module ResetMap
       for (int j = 0; j < 7; j++) begin
         if ((i[0] == 1'd1) && (j[0] == 1'd1))
           reset_map[i][j] = 3'd2; // unbreakable individual blocks
-        else if (((i == 0) && ((j == 0) || (j == 1) || (j == 5))) ||
+        else if (((i == 0) && ((j == 0) || (j == 1))) ||
                  ((i == 1) && (j == 0)) ||
                  ((i == 3) && (j == 6)) ||
-                 ((i == 4) && ((j == 1) || (j == 5) || (j == 6)))) begin
+                 ((i == 4) && ((j == 5) || (j == 6)))) begin
           reset_map[i][j] = 3'd0; // grass
         end
         else begin

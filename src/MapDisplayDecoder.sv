@@ -1,7 +1,7 @@
 `default_nettype none
 /*
 for map values:
-0: no block
+0: grass
 1: breakable
 2: unbreakable
 3: bomb
@@ -13,7 +13,7 @@ module MapDisplayDecoder
   (input  logic [2:0] map_value,
    output logic [1:0] red, green, blue);
   always_comb begin
-    if (map_value == 3'd0) begin // no block
+    if (map_value == 3'd0) begin // grass
       {red, green, blue} = {2'd0, 2'd2, 2'd0};
     end
     else if (map_value == 3'd1) begin // breakable
