@@ -302,8 +302,6 @@ module CurrMap
    input  logic pl1_win, pl2_win,
    output logic [4:0][6:0][2:0] curr_map,
    output logic [4:0][6:0][1:0] give_prev_map);
-  
-  logic [4:0][6:0][1:0] give_prev_map;
 
   always_comb begin
     for (int i = 0; i < 5; i++) begin
