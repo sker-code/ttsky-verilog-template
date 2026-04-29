@@ -39,5 +39,3 @@ module tt_um_example (
                      .HS(uo_out[7]), .VS(uo_out[6]));
 
 endmodule
-
-

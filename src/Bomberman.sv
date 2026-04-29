@@ -57,51 +57,30 @@ module Bomberman
               .bomb_x(bomb2_x), .bomb_y(bomb2_y),
               .bomb_ticking(bomb2_ticking), .bomb_firing(bomb2_firing));
 
-  GameFSM fsm_m(.pl1_alive(pl1_alive), .pl2_alive(pl2_alive),
-                .clk(clk), .rst_n(rst_n),
-                .pl1_win(pl1_win), .pl2_win(pl2_win));
+  Winner winner_m(.pl1_alive(pl1_alive), .pl2_alive(pl2_alive),
+                  .clk(clk), .rst_n(rst_n),
+                  .pl1_win(pl1_win), .pl2_win(pl2_win));
   
 endmodule: Bomberman
 
-module GameFSM
+module Winner
   (input  logic pl1_alive, pl2_alive,
    input  logic clk, rst_n,
    output logic pl1_win, pl2_win);
 
-  enum logic [1:0] {PLAY, WIN1, WIN2} curr_state, next_state;
-
-  always_comb begin
-    case (curr_state)
-      PLAY: begin
-        next_state = (pl1_alive && pl2_alive) ? PLAY : ((pl2_alive) ? WIN2 : WIN1);
-        pl1_win = 1'd0;
-        pl2_win = 1'd0;
-      end
-      WIN1: begin
-        next_state = WIN1;
-        pl1_win = 1'd1;
-        pl2_win = 1'd0;
-      end
-      WIN2: begin
-        next_state = WIN2;
-        pl1_win = 1'd0;
-        pl2_win = 1'd1;
-      end
-      default: begin
-        next_state = PLAY;
-        pl1_win = 1'd0;
-        pl2_win = 1'd0;
-      end
-    endcase
-  end
-
   always_ff @(posedge clk) begin
-  if (~rst_n) 
-    curr_state <= PLAY;
-  else
-    curr_state <= next_state;
+    if (~rst_n) begin
+      pl1_win <= 1'd0;
+      pl2_win <= 1'd0;
+    end
+    else if (~pl1_alive) begin
+      pl2_win <= 1'd1;
+    end
+    else if (~pl2_alive) begin
+      pl1_win <= 1'd1;
+    end
   end
-endmodule: GameFSM
+endmodule: Winner
 
 module BombCounter
   (input  logic clk, rst_n, refresh, clear,
@@ -297,19 +276,19 @@ module TempMap
         // if not unbreakable and not fire, replace with fire - player 1
         else if ((map[i][j] != 3'd2) && (map[i][j] != 3'd4) && 
              bomb1_firing && (((i == bomb1_y) && (j == bomb1_x)) ||
-                              ((i == bomb1_y - 4'd1) && (j == bomb1_x)) ||
-                              ((i == bomb1_y + 4'd1) && (j == bomb1_x)) ||
-                              ((i == bomb1_y) && (j == bomb1_x - 4'd1)) ||
-                              ((i == bomb1_y) && (j == bomb1_x + 4'd1)))) begin
+                              ((i == bomb1_y - 3'd1) && (j == bomb1_x)) ||
+                              ((i == bomb1_y + 3'd1) && (j == bomb1_x)) ||
+                              ((i == bomb1_y) && (j == bomb1_x - 3'd1)) ||
+                              ((i == bomb1_y) && (j == bomb1_x + 3'd1)))) begin
             temp_map[i][j] = 3'd4; // fire
         end
         // if not unbreakable and not fire, replace with fire - player 2
         else if ((map[i][j] != 3'd2) && (map[i][j] != 3'd4) && 
              bomb2_firing && (((i == bomb2_y) && (j == bomb2_x)) ||
-                              ((i == bomb2_y - 4'd1) && (j == bomb2_x)) ||
-                              ((i == bomb2_y + 4'd1) && (j == bomb2_x)) ||
-                              ((i == bomb2_y) && (j == bomb2_x - 4'd1)) ||
-                              ((i == bomb2_y) && (j == bomb2_x + 4'd1)))) begin
+                              ((i == bomb2_y - 3'd1) && (j == bomb2_x)) ||
+                              ((i == bomb2_y + 3'd1) && (j == bomb2_x)) ||
+                              ((i == bomb2_y) && (j == bomb2_x - 3'd1)) ||
+                              ((i == bomb2_y) && (j == bomb2_x + 3'd1)))) begin
             temp_map[i][j] = 3'd4; // fire
         end
         // if bomb finished firing, replace it with grass - player 1 and player 2
