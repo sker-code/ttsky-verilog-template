@@ -198,10 +198,10 @@ module Player
 
   logic up_valid, down_valid, left_valid, right_valid;
 
-  assign up_valid = (map[pl_y - 1][pl_x] == 3'd0 || map[pl_y - 1][pl_x] == 3'd4);
-  assign down_valid = (map[pl_y + 1][pl_x] == 3'd0 || map[pl_y + 1][pl_x] == 3'd4);
-  assign left_valid = (map[pl_y][pl_x - 1] == 3'd0 || map[pl_y][pl_x - 1] == 3'd4);
-  assign right_valid = (map[pl_y][pl_x + 1] == 3'd0 || map[pl_y][pl_x + 1] == 3'd4);
+  assign up_valid = up && (pl_y > 4'd1) && (map[pl_y - 1][pl_x] == 3'd0 || map[pl_y - 1][pl_x] == 3'd4);
+  assign down_valid = down && (pl_y < 4'd5) && (map[pl_y + 1][pl_x] == 3'd0 || map[pl_y + 1][pl_x] == 3'd4);
+  assign left_valid = left && (pl_x > 4'd1) && (map[pl_y][pl_x - 1] == 3'd0 || map[pl_y][pl_x - 1] == 3'd4);
+  assign right_valid = right && (pl_x < 4'd7) && (map[pl_y][pl_x + 1] == 3'd0 || map[pl_y][pl_x + 1] == 3'd4);
   
   logic up, down, left, right;
 
@@ -228,16 +228,16 @@ module Player
         pl_y <= 4'd5;
       end
     end
-    else if (up && pl_y > 4'd1 && up_valid) begin
+    else if (up_valid) begin
       pl_y <= pl_y - 4'd1;
     end
-    else if (down && pl_y < 4'd5 && down_valid) begin
+    else if (down_valid) begin
       pl_y <= pl_y + 4'd1;
     end
-    else if (left && pl_x > 4'd1 && left_valid) begin
+    else if (left_valid) begin
       pl_x <= pl_x - 4'd1;
     end
-    else if (right && pl_x < 4'd7 && right_valid) begin
+    else if (right_valid) begin
       pl_x <= pl_x + 4'd1;
     end
   end
@@ -249,7 +249,7 @@ module ButtonBuffer
    output logic button_out);
 
   logic button_sync;
-  Synchronizer sync_m(.async(button_in), .clk(clk),
+  Synchronizer sync_m(.async(button_in), .clk(clk), .rst_n(rst_n),
                       .sync(button_sync));
   
   enum logic {UP, DOWN} curr_state, next_state;
@@ -296,20 +296,20 @@ module TempMap
         end
         // if not unbreakable and not fire, replace with fire - player 1
         else if ((map[i][j] != 3'd2) && (map[i][j] != 3'd4) && 
-             bomb1_firing && (((i == bomb1_y) && (j == bomb1_x)) ||
-                              ((i == bomb1_y - 4'd1) && (j == bomb1_x)) ||
-                              ((i == bomb1_y + 4'd1) && (j == bomb1_x)) ||
-                              ((i == bomb1_y) && (j == bomb1_x - 4'd1)) ||
-                              ((i == bomb1_y) && (j == bomb1_x + 4'd1)))) begin
+             bomb1_firing && (((i[3:0] == bomb1_y) && (j[3:0] == bomb1_x)) ||
+                              ((i[3:0] == bomb1_y - 4'd1) && (j[3:0] == bomb1_x)) ||
+                              ((i[3:0] == bomb1_y + 4'd1) && (j[3:0] == bomb1_x)) ||
+                              ((i[3:0] == bomb1_y) && (j[3:0] == bomb1_x - 4'd1)) ||
+                              ((i[3:0] == bomb1_y) && (j[3:0] == bomb1_x + 4'd1)))) begin
             temp_map[i][j] = 3'd4; // fire
         end
         // if not unbreakable and not fire, replace with fire - player 2
         else if ((map[i][j] != 3'd2) && (map[i][j] != 3'd4) && 
-             bomb2_firing && (((i == bomb2_y) && (j == bomb2_x)) ||
-                              ((i == bomb2_y - 4'd1) && (j == bomb2_x)) ||
-                              ((i == bomb2_y + 4'd1) && (j == bomb2_x)) ||
-                              ((i == bomb2_y) && (j == bomb2_x - 4'd1)) ||
-                              ((i == bomb2_y) && (j == bomb2_x + 4'd1)))) begin
+             bomb2_firing && (((i[3:0] == bomb2_y) && (j[3:0] == bomb2_x)) ||
+                              ((i[3:0] == bomb2_y - 4'd1) && (j[3:0] == bomb2_x)) ||
+                              ((i[3:0] == bomb2_y + 4'd1) && (j[3:0] == bomb2_x)) ||
+                              ((i[3:0] == bomb2_y) && (j[3:0] == bomb2_x - 4'd1)) ||
+                              ((i[3:0] == bomb2_y) && (j[3:0] == bomb2_x + 4'd1)))) begin
             temp_map[i][j] = 3'd4; // fire
         end
         // if bomb finished firing, replace it with grass - player 1 and player 2
@@ -317,17 +317,17 @@ module TempMap
             temp_map[i][j] = 3'd0; // grass
         end
         // player 1 placement
-        else if ((i == pl1_y) && (j == pl1_x)) begin 
+        else if ((i[3:0] == pl1_y) && (j[3:0] == pl1_x)) begin 
           temp_map[i][j] = 3'd5; 
         end
         // player 2 placement
-        else if ((i == pl2_y) && (j == pl2_x)) begin
+        else if ((i[3:0] == pl2_y) && (j[3:0] == pl2_x)) begin
           temp_map[i][j] = 3'd6; 
         end
         // place bomb based on player 1 location
         else if (map[i][j] == 3'd5) begin // prev player 1 location
           // if placed bomb, place the bomb
-          if (bomb1_ticking && (i == bomb1_y) && (j == bomb1_x)) begin
+          if (bomb1_ticking && (i[3:0] == bomb1_y) && (j[3:0] == bomb1_x)) begin
             temp_map[i][j] = 3'd3; // bomb
           end
           // if no bomb, left is grass
@@ -338,7 +338,7 @@ module TempMap
         // place bomb based on player 2 location
         else if (map[i][j] == 3'd6) begin // prev player 2 location
           // if placed bomb, place the bomb
-          if (bomb2_ticking && (i == bomb2_y) && (j == bomb2_x)) begin
+          if (bomb2_ticking && (i[3:0] == bomb2_y) && (j[3:0] == bomb2_x)) begin
             temp_map[i][j] = 3'd3; // bomb
           end
           // if no bomb, left is grass
@@ -401,13 +401,19 @@ module Map
 endmodule: Map
 
 module Synchronizer
-  (input  logic async, clk,
+  (input  logic async, clk, rst_n,
    output logic sync);
 
   logic buffer;
 
   always_ff @(posedge clk) begin
-    sync <= buffer;
-    buffer <= async;
+    if (~rst_n) begin
+      sync <= 1'd0;
+      buffer <= 1'd0;
+    end
+    else begin
+      sync <= buffer;
+      buffer <= async;
+    end
   end
 endmodule: Synchronizer
