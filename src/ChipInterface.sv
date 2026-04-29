@@ -11,7 +11,7 @@ module ChipInterface
 
   logic [9:0] row, col;
   logic blank;
-  logic [6:0][8:0][2:0] map;
+  logic [4:0][6:0][2:0] map;
   logic refresh;
 
   VGA vga_m(.clk(clk), .rst_n(rst_n),

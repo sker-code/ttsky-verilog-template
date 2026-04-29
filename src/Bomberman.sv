@@ -5,13 +5,13 @@ module Bomberman
    input  logic btn_bomb1, 
    input  logic btn_up2, btn_down2, btn_left2, btn_right2,
    input  logic btn_bomb2,
-   output logic [6:0][8:0][2:0] map);
+   output logic [4:0][6:0][2:0] map);
   
-  logic [6:0][8:0][2:0] temp_map;
-  logic [3:0] pl1_x, pl1_y;
-  logic [3:0] pl2_x, pl2_y;
-  logic [3:0] bomb1_x, bomb1_y;
-  logic [3:0] bomb2_x, bomb2_y;
+  logic [4:0][6:0][2:0] temp_map;
+  logic [2:0] pl1_x, pl1_y;
+  logic [2:0] pl2_x, pl2_y;
+  logic [2:0] bomb1_x, bomb1_y;
+  logic [2:0] bomb2_x, bomb2_y;
   logic bomb1_ticking, bomb1_firing;
   logic bomb2_ticking, bomb2_firing;
   logic pl1_alive, pl2_alive;
@@ -120,9 +120,9 @@ endmodule: BombCounter
 
 module Bomb
   (input  logic clk, rst_n, refresh,
-   input  logic [3:0] pl_x, pl_y,
+   input  logic [2:0] pl_x, pl_y,
    input  logic btn_bomb,
-   output logic [3:0] bomb_x, bomb_y,
+   output logic [2:0] bomb_x, bomb_y,
    output logic bomb_ticking, bomb_firing);
   
   logic bomb;
@@ -139,8 +139,8 @@ module Bomb
   
   always_ff @(posedge clk) begin 
     if (~rst_n) begin
-      bomb_x <= 4'd0;
-      bomb_y <= 4'd0;
+      bomb_x <= 3'd0;
+      bomb_y <= 3'd0;
     end
     else if (curr_state == WAIT) begin
       bomb_x <= pl_x;
@@ -189,9 +189,9 @@ endmodule: Bomb
 module Player
   (input  logic clk, rst_n, refresh,
    input  logic btn_up, btn_down, btn_left, btn_right,
-   input  logic [6:0][8:0][2:0] map,
+   input  logic [4:0][6:0][2:0] map,
    input  logic is_player1,
-   output logic [3:0] pl_x, pl_y,
+   output logic [2:0] pl_x, pl_y,
    output logic is_alive);
 
   assign is_alive = (map[pl_y][pl_x] != 3'd4);
@@ -220,25 +220,25 @@ module Player
   always_ff @(posedge clk) begin
     if (~rst_n) begin
       if (is_player1) begin
-        pl_x <= 4'd1;
-        pl_y <= 4'd1;
+        pl_x <= 3'd0;
+        pl_y <= 3'd0;
       end
       else begin
-        pl_x <= 4'd7;
-        pl_y <= 4'd5;
+        pl_x <= 3'd6;
+        pl_y <= 3'd4;
       end
     end
-    else if (up && pl_y > 4'd1 && up_valid) begin
-      pl_y <= pl_y - 4'd1;
+    else if (up && pl_y > 3'd0 && up_valid) begin
+      pl_y <= pl_y - 3'd1;
     end
-    else if (down && pl_y < 4'd5 && down_valid) begin
-      pl_y <= pl_y + 4'd1;
+    else if (down && pl_y < 3'd4 && down_valid) begin
+      pl_y <= pl_y + 3'd1;
     end
-    else if (left && pl_x > 4'd1 && left_valid) begin
-      pl_x <= pl_x - 4'd1;
+    else if (left && pl_x > 3'd0 && left_valid) begin
+      pl_x <= pl_x - 3'd1;
     end
-    else if (right && pl_x < 4'd7 && right_valid) begin
-      pl_x <= pl_x + 4'd1;
+    else if (right && pl_x < 3'd6 && right_valid) begin
+      pl_x <= pl_x + 3'd1;
     end
   end
   
@@ -275,19 +275,19 @@ module ButtonBuffer
 endmodule: ButtonBuffer
 
 module TempMap
-  (input  logic [6:0][8:0][2:0] map,
-   input  logic [3:0] pl1_x, pl1_y,
-   input  logic [3:0] pl2_x, pl2_y,
-   input  logic [3:0] bomb1_x, bomb1_y,
-   input  logic [3:0] bomb2_x, bomb2_y,
+  (input  logic [4:0][6:0][2:0] map,
+   input  logic [2:0] pl1_x, pl1_y,
+   input  logic [2:0] pl2_x, pl2_y,
+   input  logic [2:0] bomb1_x, bomb1_y,
+   input  logic [2:0] bomb2_x, bomb2_y,
    input  logic bomb1_ticking, bomb1_firing,
    input  logic bomb2_ticking, bomb2_firing,
    input  logic pl1_win, pl2_win,
-   output logic [6:0][8:0][2:0] temp_map);
+   output logic [4:0][6:0][2:0] temp_map);
   
   always_comb begin
-    for (int i = 0; i < 7; i++) begin
-      for (int j = 0; j < 9; j++) begin
+    for (int i = 0; i < 5; i++) begin
+      for (int j = 0; j < 7; j++) begin
         if (pl1_win) begin //player 1 win
           temp_map[i][j] = 3'd5;
         end
@@ -356,19 +356,17 @@ module TempMap
 endmodule : TempMap
 
 module ResetMap
-  (output logic [6:0][8:0][2:0] reset_map);
+  (output logic [4:0][6:0][2:0] reset_map);
+
   always_comb begin
-    for (int i = 0; i < 7; i++) begin
-      for (int j = 0; j < 9; j++) begin
-        if ((i == 0) || (i == 6) || (j == 0) || (j == 8)) begin 
-          reset_map[i][j] = 3'd2; // unbreakable borders
-        end
-        else if ((i[0] == 0) && (j[0] == 0))
-          reset_map[i][j] = 3'd2; // between unbreakable blocks
-        else if (((i == 1) && ((j == 1) || (j == 2) || (j == 6))) ||
-                  ((i == 2) && (j == 1)) ||
-                  ((i == 4) && (j == 7)) ||
-                  ((i == 5) && ((j == 2) || (j == 6) || (j == 7)))) begin
+    for (int i = 0; i < 5; i++) begin
+      for (int j = 0; j < 7; j++) begin
+        if ((i[0] == 1'd1) && (j[0] == 1'd1))
+          reset_map[i][j] = 3'd2; // unbreakable individual blocks
+        else if (((i == 0) && ((j == 0) || (j == 1) || (j == 5))) ||
+                 ((i == 1) && (j == 0)) ||
+                 ((i == 3) && (j == 6)) ||
+                 ((i == 4) && ((j == 1) || (j == 5) || (j == 6)))) begin
           reset_map[i][j] = 3'd0; // grass
         end
         else begin
@@ -382,10 +380,10 @@ endmodule : ResetMap
 
 module Map
   (input  logic clk, rst_n, refresh,
-   input  logic [6:0][8:0][2:0] temp_map,
-   output logic [6:0][8:0][2:0] map);
+   input  logic [4:0][6:0][2:0] temp_map,
+   output logic [4:0][6:0][2:0] map);
 
-  logic [6:0][8:0][2:0] reset_map;
+  logic [4:0][6:0][2:0] reset_map;
 
   ResetMap resetmap_m(.reset_map(reset_map));
 
