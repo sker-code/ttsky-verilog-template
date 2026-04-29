@@ -10,29 +10,31 @@ for map values:
 6: player2
 */
 module MapDisplayDecoder
-  (input  logic [2:0] map_value,
+  (input  logic [1:0] map_value,
+   input  logic pl1placement, pl2placement,
+   input  logic bomb1placement, bomb2placement,
    output logic [1:0] red, green, blue);
   always_comb begin
-    if (map_value == 3'd0) begin // grass
+    if (pl1placement) begin
+      {red, green, blue} = {2'd3, 2'd2, 2'd3}; //player 1
+    end
+    else if (pl2placement) begin // player 2
+      {red, green, blue} = {2'd0, 2'd3, 2'd3};
+    end
+    else if (bomb1placement | bomb2placement) begin
+      {red, green, blue} = {2'd0, 2'd0, 2'd0}; // bomb
+    end
+    else if (map_value == 2'd0) begin // grass
       {red, green, blue} = {2'd0, 2'd2, 2'd0};
     end
-    else if (map_value == 3'd1) begin // breakable
+    else if (map_value == 2'd1) begin // breakable
       {red, green, blue} = {2'd2, 2'd2, 2'd2};
     end
-    else if (map_value == 3'd2) begin // unbreakable
+    else if (map_value == 2'd2) begin // unbreakable
       {red, green, blue} = {2'd1, 2'd1, 2'd1};
     end
-    else if (map_value == 3'd3) begin // fire
+    else if (map_value == 2'd3) begin // fire
       {red, green, blue} = {2'd3, 2'd1, 2'd0};
-    end
-    else if (map_value == 3'd4) begin // bomb
-      {red, green, blue} = {2'd0, 2'd0, 2'd0};
-    end
-    else if (map_value == 3'd5) begin // player 1
-      {red, green, blue} = {2'd3, 2'd2, 2'd3};
-    end
-    else if (map_value == 3'd6) begin // player 2
-      {red, green, blue} = {2'd0, 2'd3, 2'd3};
     end
     else begin // invalid 
       {red, green, blue} = {2'd0, 2'd0, 2'd0};

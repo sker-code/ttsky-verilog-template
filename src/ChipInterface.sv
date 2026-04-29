@@ -11,8 +11,14 @@ module ChipInterface
 
   logic [9:0] row, col;
   logic blank;
-  logic [4:0][6:0][2:0] curr_map;
+  logic [4:0][6:0][1:0] curr_map;
   logic refresh;
+  logic pl1_win, pl2_win;
+  logic [2:0] pl1_x, pl1_y;
+  logic [2:0] pl2_x, pl2_y;
+  logic [2:0] bomb1_x, bomb1_y;
+  logic [2:0] bomb2_x, bomb2_y;
+  logic bomb1_ticking, bomb2_ticking;
 
   VGA vga_m(.clk(clk), .rst_n(rst_n),
           .HS(HS), .VS(VS), .blank(blank),
@@ -21,7 +27,13 @@ module ChipInterface
   Display display_m(.row(row), .col(col),
                   .blank(blank),
                   .curr_map(curr_map),
-                  .red(red), .green(green), .blue(blue));
+                  .pl1_win(pl1_win), .pl2_win(pl2_win),
+                  .pl1_x(pl1_x), .pl1_y(pl1_y),
+                  .pl2_x(pl2_x), .pl2_y(pl2_y),
+                  .red(red), .green(green), .blue(blue),
+                  .bomb1_x(bomb1_x), .bomb1_y(bomb1_y),
+                  .bomb2_x(bomb2_x), .bomb2_y(bomb2_y),
+                  .bomb1_ticking(bomb1_ticking), .bomb2_ticking(bomb2_ticking));
 
   assign refresh = (row == 10'd479 && col == 10'd639);
 
@@ -30,6 +42,12 @@ module ChipInterface
                  .btn_bomb1(btn_bomb1),
                  .btn_up2(btn_up2), .btn_down2(btn_down2), .btn_left2(btn_left2), .btn_right2(btn_right2),
                  .btn_bomb2(btn_bomb2),
-                 .curr_map(curr_map));
+                 .curr_map(curr_map),
+                 .pl1_win(pl1_win), .pl2_win(pl2_win),
+                 .pl1_x(pl1_x), .pl1_y(pl1_y),
+                 .pl2_x(pl2_x), .pl2_y(pl2_y),
+                 .bomb1_x(bomb1_x), .bomb1_y(bomb1_y),
+                 .bomb2_x(bomb2_x), .bomb2_y(bomb2_y),
+                 .bomb1_ticking(bomb1_ticking), .bomb2_ticking(bomb2_ticking));
 
 endmodule: ChipInterface

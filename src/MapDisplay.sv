@@ -1,18 +1,33 @@
 `default_nettype none
 module MapDisplay
   (input  logic [9:0] row, col,
-   input  logic [4:0][6:0][2:0] curr_map,
+   input  logic [4:0][6:0][1:0] curr_map,
+   input  logic [2:0] pl1_x, pl1_y,
+   input  logic [2:0] pl2_x, pl2_y,
+   input  logic [2:0] bomb1_x, bomb1_y,
+   input  logic [2:0] bomb2_x, bomb2_y,
+   input  logic bomb1_ticking, bomb2_ticking,
    output logic border,
    output logic [1:0] red, green, blue);
   
-  logic [2:0] map_value;
+  logic [1:0] map_value;
   logic [2:0] i, j;
   logic row_border, col_border;
+  logic pl1placement, pl2placement;
+  logic bomb1placement, bomb2placement;
+
+  assign pl1placement = (i == pl1_y) && (j == pl1_x);
+  assign pl2placement = (i == pl2_y) && (j == pl2_x);
+  assign bomb1placement = (bomb1_ticking && (i == bomb1_y) && (j == bomb1_x));
+  assign bomb2placement = (bomb2_ticking && (i == bomb2_y) && (j == bomb2_x));
+
 
   assign map_value = curr_map[i][j];
   assign border = row_border | col_border;
   
   MapDisplayDecoder mapdecoder_m(.map_value(map_value), 
+                                 .pl1placement(pl1placement), .pl2placement(pl2placement),
+                                 .bomb1placement(bomb1placement), .bomb2placement(bomb2placement),
                                  .red(red), .green(green), .blue(blue));
 
   always_comb begin

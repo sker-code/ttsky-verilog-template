@@ -5,23 +5,23 @@ module Bomberman
    input  logic btn_bomb1, 
    input  logic btn_up2, btn_down2, btn_left2, btn_right2,
    input  logic btn_bomb2,
-   output logic [4:0][6:0][2:0] curr_map);
+   output logic [4:0][6:0][1:0] curr_map,
+   output logic pl1_win, pl2_win,
+   output logic [2:0] pl1_x, pl1_y,
+   output logic [2:0] pl2_x, pl2_y,
+   output logic [2:0] bomb1_x, bomb1_y,
+   output logic [2:0] bomb2_x, bomb2_y,
+   output logic bomb1_ticking, bomb2_ticking);
   
   logic [4:0][6:0][1:0] prev_map;
-  logic [4:0][6:0][1:0] give_prev_map;
-  logic [2:0] pl1_x, pl1_y;
-  logic [2:0] pl2_x, pl2_y;
   logic [2:0] prev_pl1_x, prev_pl1_y;
   logic [2:0] prev_pl2_x, prev_pl2_y;
-  logic [2:0] bomb1_x, bomb1_y;
-  logic [2:0] bomb2_x, bomb2_y;
-  logic bomb1_ticking, bomb1_firing;
-  logic bomb2_ticking, bomb2_firing;
+  
+  logic bomb1_firing, bomb2_firing;
   logic pl1_alive, pl2_alive;
-  logic pl1_win, pl2_win;
 
   PrevMap map_m(.clk(clk), .rst_n(rst_n), .refresh(refresh),
-            .give_prev_map(give_prev_map),
+            .curr_map(curr_map),
             .prev_map(prev_map));
 
   CurrMap currmap_m(.prev_map(prev_map),
@@ -34,8 +34,7 @@ module Bomberman
                     .bomb1_ticking(bomb1_ticking), .bomb1_firing(bomb1_firing),
                     .bomb2_ticking(bomb2_ticking), .bomb2_firing(bomb2_firing),
                     .pl1_win(pl1_win), .pl2_win(pl2_win),
-                    .curr_map(curr_map),
-                    .give_prev_map(give_prev_map));
+                    .curr_map(curr_map));
   
   PrevPlayer prevplayer_m(.clk(clk), .rst_n(rst_n), .refresh(refresh),
                           .pl1_x(pl1_x), .pl1_y(pl1_y),
@@ -180,7 +179,7 @@ endmodule: Bomb
 module Player
   (input  logic clk, rst_n, refresh,
    input  logic btn_up, btn_down, btn_left, btn_right,
-   input  logic [4:0][6:0][2:0] curr_map,
+   input  logic [4:0][6:0][1:0] curr_map,
    input  logic is_player1,
    output logic [2:0] pl_x, pl_y,
    output logic is_alive);
@@ -300,29 +299,19 @@ module CurrMap
    input  logic bomb1_ticking, bomb1_firing,
    input  logic bomb2_ticking, bomb2_firing,
    input  logic pl1_win, pl2_win,
-   output logic [4:0][6:0][2:0] curr_map,
-   output logic [4:0][6:0][1:0] give_prev_map);
+   output logic [4:0][6:0][1:0] curr_map);
 
   always_comb begin
     for (int i = 0; i < 5; i++) begin
       for (int j = 0; j < 7; j++) begin
-        if (pl1_win) begin //player 1 win
-          curr_map[i][j] = 3'd5;
-          give_prev_map[i][j] = 2'd0;
-        end
-        else if (pl2_win) begin // player 2 win
-          curr_map[i][j] = 3'd6;
-          give_prev_map[i][j] = 2'd0;
-        end
         // if not unbreakable, replace with fire - player 1
-        else if ((prev_map[i][j] != 2'd2) && 
+        if ((prev_map[i][j] != 2'd2) && 
              bomb1_firing && (((i == bomb1_y) && (j == bomb1_x)) ||
                               ((i == bomb1_y - 3'd1) && (j == bomb1_x)) ||
                               ((i == bomb1_y + 3'd1) && (j == bomb1_x)) ||
                               ((i == bomb1_y) && (j == bomb1_x - 3'd1)) ||
                               ((i == bomb1_y) && (j == bomb1_x + 3'd1)))) begin
-            curr_map[i][j] = 3'd3; // fire
-            give_prev_map[i][j] = 2'd3;
+            curr_map[i][j] = 2'd3; // fire
         end
         // if not unbreakable, replace with fire - player 2
         else if ((prev_map[i][j] != 2'd2) && 
@@ -331,38 +320,15 @@ module CurrMap
                               ((i == bomb2_y + 3'd1) && (j == bomb2_x)) ||
                               ((i == bomb2_y) && (j == bomb2_x - 3'd1)) ||
                               ((i == bomb2_y) && (j == bomb2_x + 3'd1)))) begin
-            curr_map[i][j] = 3'd3; // fire
-            give_prev_map[i][j] = 2'd3;
+            curr_map[i][j] = 2'd3; // fire
         end
         // if bomb finished firing, replace it with grass - player 1 and player 2
         else if (!bomb1_firing && !bomb2_firing && (prev_map[i][j] == 2'd3)) begin 
-            curr_map[i][j] = 3'd0; // grass
-            give_prev_map[i][j] = 2'd0;
+            curr_map[i][j] = 2'd0; // grass
         end
-        // player 1 placement
-        else if ((i == pl1_y) && (j == pl1_x)) begin 
-          curr_map[i][j] = 3'd5;
-          give_prev_map[i][j] = 2'd0;
-        end
-        // player 2 placement
-        else if ((i == pl2_y) && (j == pl2_x)) begin
-          curr_map[i][j] = 3'd6; 
-          give_prev_map[i][j] = 2'd0;
-        end
-        // place bomb based on player 1 location
-        else if (bomb1_ticking && (i == bomb1_y) && (j == bomb1_x)) begin 
-          curr_map[i][j] = 3'd4; // bomb
-          give_prev_map[i][j] = 2'd0;
-        end
-        // place bomb based on player 2 location
-        else if (bomb2_ticking && (i == bomb2_y) && (j == bomb2_x)) begin
-          curr_map[i][j] = 3'd4; // bomb
-          give_prev_map[i][j] = 2'd0;
-        end 
         // default case
         else begin
           curr_map[i][j] = prev_map[i][j];
-          give_prev_map[i][j] = prev_map[i][j];
         end
       end
     end
@@ -394,7 +360,7 @@ endmodule : ResetMap
 
 module PrevMap
   (input  logic clk, rst_n, refresh,
-   input  logic [4:0][6:0][1:0] give_prev_map,
+   input  logic [4:0][6:0][1:0] curr_map,
    output logic [4:0][6:0][1:0] prev_map);
 
   logic [4:0][6:0][1:0] reset_map;
@@ -406,7 +372,7 @@ module PrevMap
       prev_map <= reset_map;
     end
     else if (refresh) begin 
-      prev_map <= give_prev_map;
+      prev_map <= curr_map;
     end
   end
 
