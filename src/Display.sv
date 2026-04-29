@@ -31,6 +31,9 @@ module Display
     else if (border) begin
       {red, green, blue} = {2'd1, 2'd1, 2'd1}; // unbreakable blocks for border
     end
+    else if (pl1_win & pl2_win) begin
+      {red, green, blue} = {2'd2, 2'd2, 2'd3}; // tie
+    end
     else if (pl1_win) begin
       {red, green, blue} = {2'd3, 2'd2, 2'd3};
     end

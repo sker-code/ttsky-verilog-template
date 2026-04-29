@@ -46,6 +46,10 @@ module Bomberman
                    .btn_up(btn_up1), .btn_down(btn_down1), .btn_left(btn_left1), .btn_right(btn_right1),
                    .curr_map(curr_map),
                    .is_player1(1'd1),
+                   .other_x(pl2_x), .other_y(pl2_y),
+                   .bomb1_x(bomb1_x), .bomb1_y(bomb1_y),
+                   .bomb2_x(bomb2_x), .bomb2_y(bomb2_y),
+                   .bomb1_ticking(bomb1_ticking), .bomb2_ticking(bomb2_ticking), 
                    .pl_x(pl1_x), .pl_y(pl1_y),
                    .is_alive(pl1_alive));
   
@@ -53,6 +57,10 @@ module Bomberman
                    .btn_up(btn_up2), .btn_down(btn_down2), .btn_left(btn_left2), .btn_right(btn_right2),
                    .curr_map(curr_map),
                    .is_player1(1'd0),
+                   .other_x(pl1_x), .other_y(pl1_y),
+                   .bomb1_x(bomb1_x), .bomb1_y(bomb1_y),
+                   .bomb2_x(bomb2_x), .bomb2_y(bomb2_y),
+                   .bomb1_ticking(bomb1_ticking), .bomb2_ticking(bomb2_ticking), 
                    .pl_x(pl2_x), .pl_y(pl2_y),
                    .is_alive(pl2_alive));
 
@@ -181,17 +189,45 @@ module Player
    input  logic btn_up, btn_down, btn_left, btn_right,
    input  logic [4:0][6:0][1:0] curr_map,
    input  logic is_player1,
+   input  logic [2:0] other_x, other_y,
+   input  logic [2:0] bomb1_x, bomb1_y,
+   input  logic [2:0] bomb2_x, bomb2_y,
+   input  logic bomb1_ticking, bomb2_ticking, 
    output logic [2:0] pl_x, pl_y,
    output logic is_alive);
 
   assign is_alive = (curr_map[pl_y][pl_x] != 3'd3);
 
+  logic up_bomb1_col, down_bomb1_col, left_bomb1_col, right_bomb1_col;
+  logic up_bomb2_col, down_bomb2_col, left_bomb2_col, right_bomb2_col;
+  logic up_pl_col, down_pl_col, left_pl_col, right_pl_col;
+  logic up_map_valid, down_map_valid, left_map_valid, right_map_valid;
   logic up_valid, down_valid, left_valid, right_valid;
 
-  assign up_valid = (curr_map[pl_y - 1][pl_x] == 3'd0 || curr_map[pl_y - 1][pl_x] == 3'd3);
-  assign down_valid = (curr_map[pl_y + 1][pl_x] == 3'd0 || curr_map[pl_y + 1][pl_x] == 3'd3);
-  assign left_valid = (curr_map[pl_y][pl_x - 1] == 3'd0 || curr_map[pl_y][pl_x - 1] == 3'd3);
-  assign right_valid = (curr_map[pl_y][pl_x + 1] == 3'd0 || curr_map[pl_y][pl_x + 1] == 3'd3);
+  assign up_bomb1_col = bomb1_ticking && (bomb1_y == pl_y - 1) && (bomb1_x == pl_x);
+  assign down_bomb1_col = bomb1_ticking && (bomb1_y == pl_y + 1) && (bomb1_x == pl_x);
+  assign left_bomb1_col = bomb1_ticking && (bomb1_y == pl_y) && (bomb1_x == pl_x - 1);
+  assign right_bomb1_col = bomb1_ticking && (bomb1_y == pl_y) && (bomb1_x == pl_x + 1);
+
+  assign up_bomb2_col = bomb2_ticking && (bomb2_y == pl_y - 1) && (bomb2_x == pl_x);
+  assign down_bomb2_col = bomb2_ticking && (bomb2_y == pl_y + 1) && (bomb2_x == pl_x);
+  assign left_bomb2_col = bomb2_ticking && (bomb2_y == pl_y) && (bomb2_x == pl_x - 1);
+  assign right_bomb2_col = bomb2_ticking && (bomb2_y == pl_y) && (bomb2_x == pl_x + 1);
+
+  assign up_pl_col = (other_y == pl_y - 1) && (other_x == pl_x);
+  assign down_pl_col = (other_y == pl_y + 1) && (other_x == pl_x);
+  assign left_pl_col = (other_y == pl_y) && (other_x == pl_x - 1);
+  assign right_pl_col = (other_y == pl_y) && (other_x == pl_x + 1);
+
+  assign up_map_valid = (curr_map[pl_y - 1][pl_x] == 3'd0 || curr_map[pl_y - 1][pl_x] == 3'd3);
+  assign down_map_valid = (curr_map[pl_y + 1][pl_x] == 3'd0 || curr_map[pl_y + 1][pl_x] == 3'd3);
+  assign left_map_valid = (curr_map[pl_y][pl_x - 1] == 3'd0 || curr_map[pl_y][pl_x - 1] == 3'd3);
+  assign right_map_valid = (curr_map[pl_y][pl_x + 1] == 3'd0 || curr_map[pl_y][pl_x + 1] == 3'd3);
+
+  assign up_valid = ~up_bomb1_col & ~up_bomb2_col & ~up_pl_col & up_map_valid;
+  assign down_valid = ~down_bomb1_col & ~down_bomb2_col & ~down_pl_col & down_map_valid;
+  assign left_valid = ~left_bomb1_col & ~left_bomb2_col & ~left_pl_col & left_map_valid;
+  assign right_valid = ~right_bomb1_col & ~right_bomb2_col & ~right_pl_col & right_map_valid;
   
   logic up, down, left, right;
 
