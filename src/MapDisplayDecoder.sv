@@ -4,8 +4,8 @@ for map values:
 0: grass
 1: breakable
 2: unbreakable
-3: bomb
-4: fire
+3: fire
+4: bomb
 5: player1
 6: player2
 */
@@ -22,11 +22,11 @@ module MapDisplayDecoder
     else if (map_value == 3'd2) begin // unbreakable
       {red, green, blue} = {2'd1, 2'd1, 2'd1};
     end
-    else if (map_value == 3'd3) begin // bomb
-      {red, green, blue} = {2'd0, 2'd0, 2'd0};
-    end
-    else if (map_value == 3'd4) begin // fire
+    else if (map_value == 3'd3) begin // fire
       {red, green, blue} = {2'd3, 2'd1, 2'd0};
+    end
+    else if (map_value == 3'd4) begin // bomb
+      {red, green, blue} = {2'd0, 2'd0, 2'd0};
     end
     else if (map_value == 3'd5) begin // player 1
       {red, green, blue} = {2'd3, 2'd2, 2'd3};
@@ -34,7 +34,7 @@ module MapDisplayDecoder
     else if (map_value == 3'd6) begin // player 2
       {red, green, blue} = {2'd0, 2'd3, 2'd3};
     end
-    else begin // other 
+    else begin // invalid 
       {red, green, blue} = {2'd0, 2'd0, 2'd0};
     end
   end

@@ -11,7 +11,7 @@ module ChipInterface
 
   logic [9:0] row, col;
   logic blank;
-  logic [4:0][6:0][2:0] map;
+  logic [4:0][6:0][2:0] curr_map;
   logic refresh;
 
   VGA vga_m(.clk(clk), .rst_n(rst_n),
@@ -20,7 +20,7 @@ module ChipInterface
   
   Display display_m(.row(row), .col(col),
                   .blank(blank),
-                  .map(map),
+                  .curr_map(curr_map),
                   .red(red), .green(green), .blue(blue));
 
   assign refresh = (row == 10'd479 && col == 10'd639);
@@ -30,6 +30,6 @@ module ChipInterface
                  .btn_bomb1(btn_bomb1),
                  .btn_up2(btn_up2), .btn_down2(btn_down2), .btn_left2(btn_left2), .btn_right2(btn_right2),
                  .btn_bomb2(btn_bomb2),
-                 .map(map));
+                 .curr_map(curr_map));
 
 endmodule: ChipInterface

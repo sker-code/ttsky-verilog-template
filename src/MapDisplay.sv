@@ -1,7 +1,7 @@
 `default_nettype none
 module MapDisplay
   (input  logic [9:0] row, col,
-   input  logic [4:0][6:0][2:0] map,
+   input  logic [4:0][6:0][2:0] curr_map,
    output logic border,
    output logic [1:0] red, green, blue);
   
@@ -9,7 +9,7 @@ module MapDisplay
   logic [2:0] i, j;
   logic row_border, col_border;
 
-  assign map_value = map[i][j];
+  assign map_value = curr_map[i][j];
   assign border = row_border | col_border;
   
   MapDisplayDecoder mapdecoder_m(.map_value(map_value), 
