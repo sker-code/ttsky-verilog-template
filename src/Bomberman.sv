@@ -1,4 +1,6 @@
 `default_nettype none
+
+// Game logic module
 module Bomberman
   (input  logic clk, rst_n, refresh,
    input  logic btn_up1, btn_down1, btn_left1, btn_right1,
@@ -16,13 +18,12 @@ module Bomberman
   logic [4:0][6:0][1:0] prev_map;
   logic [2:0] prev_pl1_x, prev_pl1_y;
   logic [2:0] prev_pl2_x, prev_pl2_y;
-  
   logic bomb1_firing, bomb2_firing;
   logic pl1_alive, pl2_alive;
 
   PrevMap map_m(.clk(clk), .rst_n(rst_n), .refresh(refresh),
-            .curr_map(curr_map),
-            .prev_map(prev_map));
+                .curr_map(curr_map),
+                .prev_map(prev_map));
 
   CurrMap currmap_m(.prev_map(prev_map),
                     .pl1_x(pl1_x), .pl1_y(pl1_y),
@@ -71,17 +72,17 @@ module Bomberman
               .bomb_ticking(bomb1_ticking), .bomb_firing(bomb1_firing));
 
   Bomb bomb2_m(.clk(clk), .rst_n(rst_n), .refresh(refresh),
-              .pl_x(pl2_x), .pl_y(pl2_y),
-              .btn_bomb(btn_bomb2),
-              .bomb_x(bomb2_x), .bomb_y(bomb2_y),
-              .bomb_ticking(bomb2_ticking), .bomb_firing(bomb2_firing));
+               .pl_x(pl2_x), .pl_y(pl2_y),
+               .btn_bomb(btn_bomb2),
+               .bomb_x(bomb2_x), .bomb_y(bomb2_y),
+               .bomb_ticking(bomb2_ticking), .bomb_firing(bomb2_firing));
 
   Winner winner_m(.pl1_alive(pl1_alive), .pl2_alive(pl2_alive),
                   .clk(clk), .rst_n(rst_n),
                   .pl1_win(pl1_win), .pl2_win(pl2_win));
-  
 endmodule: Bomberman
 
+// Determine if a player has won or not
 module Winner
   (input  logic pl1_alive, pl2_alive,
    input  logic clk, rst_n,
@@ -101,21 +102,22 @@ module Winner
   end
 endmodule: Winner
 
+// Counter for bomb
 module BombCounter
   (input  logic clk, rst_n, refresh, clear,
    output logic [5:0] counter);
   
   always_ff @(posedge clk) begin
     if (~rst_n || clear) begin
-      counter <= 7'd0;
+      counter <= 6'd0;
     end
     else if (refresh) begin
-      counter <= counter + 7'd1;
+      counter <= counter + 6'd1;
     end
   end
-
 endmodule: BombCounter
 
+// Contains bomb status states
 module Bomb
   (input  logic clk, rst_n, refresh,
    input  logic [2:0] pl_x, pl_y,
@@ -123,14 +125,13 @@ module Bomb
    output logic [2:0] bomb_x, bomb_y,
    output logic bomb_ticking, bomb_firing);
   
+  enum logic [1:0] {WAIT, TICKING, FIRE} curr_state, next_state;
   logic bomb;
   logic [5:0] counter;
   logic clear_counter; 
 
   ButtonBuffer up_m(.button_in(btn_bomb), .clk(clk), .rst_n(rst_n), .refresh(refresh),
                     .button_out(bomb));
-  
-  enum logic [1:0] {WAIT, TICKING, FIRE} curr_state, next_state;
 
   BombCounter cntr(.clk(clk), .rst_n(rst_n), .refresh(refresh), .clear(clear_counter),
                    .counter(counter));
@@ -181,9 +182,9 @@ module Bomb
   else
     curr_state <= next_state;
   end
-
 endmodule: Bomb
 
+// Updates player location
 module Player
   (input  logic clk, rst_n, refresh,
    input  logic btn_up, btn_down, btn_left, btn_right,
@@ -196,13 +197,14 @@ module Player
    output logic [2:0] pl_x, pl_y,
    output logic is_alive);
 
-  assign is_alive = (curr_map[pl_y][pl_x] != 3'd3);
-
   logic up_bomb1_col, down_bomb1_col, left_bomb1_col, right_bomb1_col;
   logic up_bomb2_col, down_bomb2_col, left_bomb2_col, right_bomb2_col;
   logic up_pl_col, down_pl_col, left_pl_col, right_pl_col;
   logic up_map_valid, down_map_valid, left_map_valid, right_map_valid;
   logic up_valid, down_valid, left_valid, right_valid;
+  logic up, down, left, right;
+
+  assign is_alive = (curr_map[pl_y][pl_x] != 2'd3);
 
   assign up_bomb1_col = bomb1_ticking && (bomb1_y == pl_y - 1) && (bomb1_x == pl_x);
   assign down_bomb1_col = bomb1_ticking && (bomb1_y == pl_y + 1) && (bomb1_x == pl_x);
@@ -219,17 +221,15 @@ module Player
   assign left_pl_col = (other_y == pl_y) && (other_x == pl_x - 1);
   assign right_pl_col = (other_y == pl_y) && (other_x == pl_x + 1);
 
-  assign up_map_valid = (curr_map[pl_y - 1][pl_x] == 3'd0 || curr_map[pl_y - 1][pl_x] == 3'd3);
-  assign down_map_valid = (curr_map[pl_y + 1][pl_x] == 3'd0 || curr_map[pl_y + 1][pl_x] == 3'd3);
-  assign left_map_valid = (curr_map[pl_y][pl_x - 1] == 3'd0 || curr_map[pl_y][pl_x - 1] == 3'd3);
-  assign right_map_valid = (curr_map[pl_y][pl_x + 1] == 3'd0 || curr_map[pl_y][pl_x + 1] == 3'd3);
+  assign up_map_valid = (curr_map[pl_y - 1][pl_x] == 2'd0 || curr_map[pl_y - 1][pl_x] == 2'd3);
+  assign down_map_valid = (curr_map[pl_y + 1][pl_x] == 2'd0 || curr_map[pl_y + 1][pl_x] == 2'd3);
+  assign left_map_valid = (curr_map[pl_y][pl_x - 1] == 2'd0 || curr_map[pl_y][pl_x - 1] == 2'd3);
+  assign right_map_valid = (curr_map[pl_y][pl_x + 1] == 2'd0 || curr_map[pl_y][pl_x + 1] == 2'd3);
 
   assign up_valid = ~up_bomb1_col & ~up_bomb2_col & ~up_pl_col & up_map_valid;
   assign down_valid = ~down_bomb1_col & ~down_bomb2_col & ~down_pl_col & down_map_valid;
   assign left_valid = ~left_bomb1_col & ~left_bomb2_col & ~left_pl_col & left_map_valid;
   assign right_valid = ~right_bomb1_col & ~right_bomb2_col & ~right_pl_col & right_map_valid;
-  
-  logic up, down, left, right;
 
   ButtonBuffer up_m(.button_in(btn_up), .clk(clk), .rst_n(rst_n), .refresh(refresh),
                     .button_out(up));
@@ -267,18 +267,18 @@ module Player
       pl_x <= pl_x + 3'd1;
     end
   end
-  
 endmodule: Player
 
+// Buffer for buttons
 module ButtonBuffer
   (input  logic button_in, clk, rst_n, refresh,
    output logic button_out);
 
+  enum logic {UP, DOWN} curr_state, next_state;
   logic button_sync;
+
   Synchronizer sync_m(.async(button_in), .clk(clk),
                       .sync(button_sync));
-  
-  enum logic {UP, DOWN} curr_state, next_state;
   
   always_comb begin
     case (curr_state)
@@ -292,6 +292,7 @@ module ButtonBuffer
       end
     endcase
   end
+
   always_ff @(posedge clk) begin
   if (~rst_n) 
     curr_state <= UP;
@@ -300,6 +301,7 @@ module ButtonBuffer
   end
 endmodule: ButtonBuffer
 
+// Keeps track of the previous player location
 module PrevPlayer
   (input  logic clk, rst_n, refresh,
    input  logic [2:0] pl1_x, pl1_y,
@@ -321,9 +323,9 @@ module PrevPlayer
       prev_pl2_y <= pl2_y;
     end
   end
-
 endmodule : PrevPlayer
 
+// Generates the current map for display
 module CurrMap
   (input  logic [4:0][6:0][1:0] prev_map,
    input  logic [2:0] pl1_x, pl1_y,
@@ -371,6 +373,7 @@ module CurrMap
   end
 endmodule : CurrMap
 
+// Value for default map on game start
 module ResetMap
   (output logic [4:0][6:0][1:0] reset_map);
 
@@ -378,22 +381,22 @@ module ResetMap
     for (int i = 0; i < 5; i++) begin
       for (int j = 0; j < 7; j++) begin
         if ((i[0] == 1'd1) && (j[0] == 1'd1))
-          reset_map[i][j] = 3'd2; // unbreakable individual blocks
+          reset_map[i][j] = 2'd2; // unbreakable individual blocks
         else if (((i == 0) && ((j == 0) || (j == 1))) ||
                  ((i == 1) && (j == 0)) ||
                  ((i == 3) && (j == 6)) ||
                  ((i == 4) && ((j == 5) || (j == 6)))) begin
-          reset_map[i][j] = 3'd0; // grass
+          reset_map[i][j] = 2'd0; // grass
         end
         else begin
-          reset_map[i][j] = 3'd1; // breakable block
+          reset_map[i][j] = 2'd1; // breakable block
         end
       end
     end
   end
-
 endmodule : ResetMap
 
+// Stores the previous map in registers
 module PrevMap
   (input  logic clk, rst_n, refresh,
    input  logic [4:0][6:0][1:0] curr_map,
@@ -411,9 +414,9 @@ module PrevMap
       prev_map <= curr_map;
     end
   end
-
 endmodule: PrevMap
 
+// Synchronizer for buttons
 module Synchronizer
   (input  logic async, clk,
    output logic sync);

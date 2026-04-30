@@ -1,4 +1,6 @@
 `default_nettype none
+
+// VGA display
 module VGA
   (input  logic clk, rst_n,
    output logic HS, VS, blank,
@@ -33,6 +35,7 @@ module VGA
       HS_blank = 1'b1;
     end
   end
+
   always_ff @(posedge clk) begin //HS
     if (~rst_n) begin
       HS_counter <= 10'd0;

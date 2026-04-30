@@ -2,7 +2,6 @@
  * Copyright (c) 2026 Sylvia Ker
  * SPDX-License-Identifier: Apache-2.0
  */
-
 `default_nettype none
 
 module tt_um_sker (
@@ -16,14 +15,9 @@ module tt_um_sker (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  // IOs: Enable path (active high: 0=input, 1=output)
-  assign uio_oe = 8'b0000_0000;
-
-  // List all unused inputs to prevent warnings
-  wire _unused = &{uio_in[7:2], ena, '0};
-
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uio_out = 0;
+  assign uio_oe = 8'b0000_0000; // IOs: Enable path (active high: 0=input, 1=output)
+  wire _unused = &{uio_in[7:2], ena, '0}; // List all unused inputs to prevent warnings
+  assign uio_out = 0; // If output pins not used, assign to 0.
 
   ChipInterface chip(.clk(clk), .rst_n(rst_n),
                      .btn_up1(ui_in[0]), .btn_down1(ui_in[1]), .btn_left1(ui_in[2]), .btn_right1(ui_in[3]),
@@ -32,5 +26,4 @@ module tt_um_sker (
                      .btn_bomb2(uio_in[1]),
                      .red(uo_out[1:0]), .green(uo_out[3:2]), .blue(uo_out[5:4]), 
                      .HS(uo_out[7]), .VS(uo_out[6]));
-
 endmodule
