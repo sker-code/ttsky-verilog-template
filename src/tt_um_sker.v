@@ -24,6 +24,6 @@ module tt_um_sker (
                      .btn_bomb1(uio_in[0]),
                      .btn_up2(ui_in[4]), .btn_down2(ui_in[5]), .btn_left2(ui_in[6]), .btn_right2(ui_in[7]),
                      .btn_bomb2(uio_in[1]),
-                     .red(uo_out[1:0]), .green(uo_out[3:2]), .blue(uo_out[5:4]), 
-                     .HS(uo_out[7]), .VS(uo_out[6]));
+                     .red({uo_out[0], uo_out[4]}), .green({uo_out[1], uo_out[5]}), .blue({uo_out[2], uo_out[6]}), 
+                     .HS(uo_out[3]), .VS(uo_out[7]));
 endmodule
