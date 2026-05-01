@@ -339,11 +339,9 @@ module CurrMap
    input  logic pl1_win, pl2_win,
    output logic [4:0][6:0][1:0] curr_map);
 
-  genvar i;
-  genvar j;
-  for (i = 0; i < 5; i++) begin: i_loop
-    for (j = 0; j < 7; j++) begin: j_loop
-      always_comb begin
+  always_comb begin
+    for (int i = 0; i < 5; i++) begin
+      for (int j = 0; j < 7; j++) begin
         // if not unbreakable, replace with fire - player 1
         if ((prev_map[i][j] != 2'd2) && 
              bomb1_firing && (((i == bomb1_y) && (j == bomb1_x)) ||
@@ -379,11 +377,9 @@ endmodule : CurrMap
 module ResetMap
   (output logic [4:0][6:0][1:0] reset_map);
 
-  genvar i;
-  genvar j;
-  for (i = 0; i < 5; i++) begin: i_loop
-    for (j = 0; j < 7; j++) begin: j_loop
-      always_comb begin
+  always_comb begin
+    for (int i = 0; i < 5; i++) begin
+      for (int j = 0; j < 7; j++) begin
         if ((i[0] == 1'd1) && (j[0] == 1'd1))
           reset_map[i][j] = 2'd2; // unbreakable individual blocks
         else if (((i == 0) && ((j == 0) || (j == 1))) ||

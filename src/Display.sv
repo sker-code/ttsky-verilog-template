@@ -76,7 +76,6 @@ module MapDisplay
   assign pl2placement = (i == pl2_y) && (j == pl2_x);
   assign bomb1placement = (bomb1_ticking && (i == bomb1_y) && (j == bomb1_x));
   assign bomb2placement = (bomb2_ticking && (i == bomb2_y) && (j == bomb2_x));
-  assign map_value = curr_map[i][j];
   assign border = row_border | col_border;
   
   MapDisplayDecoder mapdecoder_m(.map_value(map_value), 
@@ -104,6 +103,8 @@ module MapDisplay
     else if (col < 10'd476) j = 3'd5; // col 5
     else if (col < 10'd544) j = 3'd6; // col 6
     else begin col_border = 1'd1; j = 3'd0; end // border
+    
+    map_value = curr_map[i][j];
   end
 endmodule: MapDisplay
 
