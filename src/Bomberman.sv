@@ -150,28 +150,19 @@ module Bomb
   always_comb begin
     case (curr_state)
       WAIT: begin
-        if (bomb)
-          next_state = TICKING;
-        else
-          next_state = WAIT;
+        next_state = (bomb) ? TICKING : WAIT;
         bomb_ticking = 1'd0;
         clear_counter = 1'd1;
         bomb_firing = 1'd0;
       end
       TICKING: begin
-        if (counter == 40)
-          next_state = FIRE;
-        else
-          next_state = TICKING;
+        next_state = (counter == 40) ? FIRE : TICKING;
         bomb_ticking = 1'd1;
         clear_counter = 1'd0;
         bomb_firing = 1'd0;
       end
       FIRE: begin
-        if (counter == 63)
-          next_state = WAIT;
-        else
-          next_state = FIRE;
+        next_state = (counter == 63) ? WAIT : FIRE;
         bomb_ticking = 1'd0;
         clear_counter = 1'd0;
         bomb_firing = 1'd1;
@@ -292,17 +283,11 @@ module ButtonBuffer
   always_comb begin
     case (curr_state)
       UP: begin
-        if (button_sync && refresh) 
-          next_state = DOWN;
-        else 
-          next_state = UP;
+        next_state = (button_sync && refresh) ? DOWN : UP;
         button_out = (button_sync && refresh);
       end
       DOWN: begin 
-        if (~button_sync && refresh)
-          next_state = UP;
-        else 
-          next_state = DOWN;
+        next_state = (~button_sync && refresh) ? UP : DOWN;
         button_out = 0;
       end
     endcase
